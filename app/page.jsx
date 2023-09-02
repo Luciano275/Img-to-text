@@ -1,6 +1,6 @@
 'use client';
 
-import Tesseract from "tesseract.js"
+import Tesseract, { createWorker } from "tesseract.js"
 import { useEffect, useState } from "react";
 import Loading from "./components/Loading";
 
@@ -14,18 +14,34 @@ export default function Home() {
     let tmp = new Array(images.length).fill(0);
     let tmpText = new Array(images.length).fill('');
 
-    images.map((image, index) => {
-      return Tesseract.recognize(image, 'spa', {
+    images.map(async (image, index) => {
+      // return Tesseract.recognize(image, 'spa', {
+      //   logger: m => {
+      //     tmp[index] = Math.floor(m.progress * 100);
+      //     setProgress([...tmp])
+      //   }
+      // }).then(({ data }) => {
+      //   try {
+      //     tmpText[index] = data.text;
+      //     setText([...tmpText])
+      //   } catch (e) {}
+      // });
+
+      let worker = await createWorker({
         logger: m => {
-          tmp[index] = Math.floor(m.progress * 100);
+          tmp[index] = Math.floor(m.progress * 100)
           setProgress([...tmp])
         }
-      }).then(({ data }) => {
-        try {
-          tmpText[index] = data.text;
-          setText([...tmpText])
-        } catch (e) {}
-      });
+      })
+
+      await worker.loadLanguage('spa')
+      await worker.initialize('spa')
+      const {data} = await worker.recognize(image);
+      tmpText[index] = data.text;
+      setText([...tmpText])
+      await worker.terminate()
+
+
     });
 
 
