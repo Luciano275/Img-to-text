@@ -50,7 +50,7 @@ export default function Home() {
       await worker.loadLanguage('spa')
       await worker.initialize('spa')
       const {data} = await worker.recognize(image);
-      tmpText[text.length > 0 ? index+text.length : index] = index == images.length-1 ? data.text : data.text+'&^'
+      tmpText[text.length > 0 ? index+text.length : index] = data.text
       setText([...tmpText])
       await worker.terminate()
 
@@ -164,7 +164,7 @@ export default function Home() {
         </div>
         <form className="w-full max-w-5xl mx-auto flex flex-col items-center py-4 gap-4" onSubmit={handleSubmit}>
           <div className="relative w-full max-w-md mx-auto py-10 px-5">
-            <input type="file" name="file" id="file" onChange={handleChange} multiple className="absolute top-0 left-0 w-full h-full opacity-0 z-10 cursor-pointer" />
+            <input type="file" accept=".jpg, .jpeg, .png" name="file" id="file" onChange={handleChange} multiple className="absolute top-0 left-0 w-full h-full opacity-0 z-10 cursor-pointer" />
             <span className="absolute top-0 left-0 w-full h-full flex justify-center items-center border-dashed border-4 border-blue-500 text-center">Selecciona imagenes o arrastralas</span>
           </div>
           {
@@ -174,7 +174,19 @@ export default function Home() {
               </ul>
             )
           }
-          <textarea name="results" id="results" value={text.toString()} onChange={handleChange} className="bg-slate-200 p-4 w-full" style={{minHeight: 500, height: '100%', maxHeight: 800}} readOnly></textarea>
+          <textarea name="results" id="results" value={text.toString()} onChange={handleChange} className="bg-slate-200 p-4 w-full" style={{minHeight: 500, height: '100%', maxHeight: 800}} readOnly>
+          </textarea>
+          <style jsx>{`
+              textarea::-webkit-scrollbar {
+                width: 10px;
+                background: #fff;
+              }
+              textarea::-webkit-scrollbar-thumb {
+                background: #000;
+                border-radius: 50px;
+                border: 2px solid #fff;
+              }
+          `}</style>
           <div className="flex justify-between gap-4 w-full flex-wrap">
             <button className="bg-blue-500 p-4 text-white grow transition-colors hover:bg-blue-400" ref={ref} style={{
               minWidth: 250
